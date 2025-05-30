@@ -23,8 +23,8 @@ export class Schedule {
   @Prop({ required: true })
   price: number;
 
-  @Prop()
-  taken: [];
+  @Prop({ type: [String], default: [] })
+  taken: string[];
 }
 
 @Schema()
@@ -56,7 +56,7 @@ export class Film {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true })
+  @Prop({ type: [Schedule], default: [] })
   schedule: Schedule[];
 }
 

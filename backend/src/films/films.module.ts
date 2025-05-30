@@ -4,9 +4,11 @@ import { Film, FilmSchema } from './films.schema';
 import { FilmsController } from './films.controller';
 import { FilmsService } from './films.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FilmsRepository } from '../repository/films.repository';
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -22,6 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ]),
   ],
   controllers: [FilmsController],
-  providers: [FilmsService],
+  providers: [FilmsService, FilmsRepository],
+  exports: [FilmsRepository],
 })
 export class FilmsModule {}

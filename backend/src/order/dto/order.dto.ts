@@ -7,3 +7,10 @@ export interface Ticket {
   price: number;
   id: string;
 }
+
+export interface CreateOrdersDto {
+  email: string;
+  phone: string;
+  tickets: Ticket[];
+  id: string;
+}
