@@ -17,7 +17,7 @@ import { Schedule } from './entities/schedule.entity';
         password: config.get('DATABASE_PASSWORD'),
         database: config.get('DATABASE_NAME'),
         entities: [Film, Schedule],
-        synchronize: false,
+        synchronize: true,
       }),
     }),
     TypeOrmModule.forFeature([Film, Schedule]),

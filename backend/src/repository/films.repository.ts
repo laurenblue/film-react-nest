@@ -1,20 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Film, FilmsDocument } from '../films/films.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Film } from '../typeorm/entities/film.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FilmsRepository {
   constructor(
-    @InjectModel(Film.name)
-    private filmModel: Model<FilmsDocument>,
+    @InjectRepository(Film)
+    private readonly filmRepo: Repository<Film>,
   ) {}
 
-  async findFilmById(id: string): Promise<FilmsDocument> {
-    return this.filmModel.findOne({ id }).exec();
+  async findFilmById(id: string): Promise<Film | null> {
+    return this.filmRepo.findOne({
+      where: { id },
+      relations: ['schedule'],
+    });
   }
 
-  async saveFilm(film: FilmsDocument): Promise<FilmsDocument> {
-    return film.save();
+  async saveFilm(film: Film): Promise<Film> {
+    return this.filmRepo.save(film);
+  }
+
+  async findAllFilms(): Promise<Film[]> {
+    return this.filmRepo.find({ relations: ['schedule'] });
   }
 }

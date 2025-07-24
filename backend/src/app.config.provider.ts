@@ -5,8 +5,8 @@ export const configProvider = {
   provide: 'CONFIG',
   useValue: <AppConfig>{
     database: {
-      driver: process.env.DATABASE_DRIVER || 'mongodb',
-      url: process.env.DATABASE_URL || 'mongodb://localhost:27017/afisha',
+      driver: process.env.DATABASE_DRIVER || 'postgres',
+      url: process.env.DATABASE_URL || 'postgres://localhost:27017/afisha',
     },
   },
 };

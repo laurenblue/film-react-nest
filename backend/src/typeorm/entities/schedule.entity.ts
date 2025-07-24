@@ -21,8 +21,8 @@ export class Schedule {
   @Column('int')
   price: number;
 
-  @Column('jsonb')
-  taken: boolean[][];
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
+  taken: string[];
 
   @ManyToOne(() => Film, (film) => film.schedule, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'film_id' })

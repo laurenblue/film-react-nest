@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Film, Schedule } from './films.schema';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
+import { Film } from 'src/typeorm/entities/film.entity';
+import { Schedule } from 'src/typeorm/entities/schedule.entity';
 interface IFilms {
   total: number;
   items: Film[];
@@ -15,15 +16,29 @@ interface ISchedules {
 
 @Injectable()
 export class FilmsService {
-  constructor(@InjectModel(Film.name) private filmModel: Model<Film>) {}
+  constructor(
+    @InjectRepository(Film)
+    private filmRepository: Repository<Film>,
+
+    @InjectRepository(Schedule)
+    private scheduleRepository: Repository<Schedule>,
+  ) {}
 
   async findAll(): Promise<IFilms> {
-    const result = await this.filmModel.find();
-    return { total: result.length, items: result };
+    const films = await this.filmRepository.find({ relations: ['schedule'] });
+    return { total: films.length, items: films };
   }
 
-  async findScheduleById(id: string): Promise<ISchedules> {
-    const result = await this.filmModel.findOne({ id: id });
-    return { total: result.schedule.length, items: result.schedule };
+  async findScheduleById(filmId: string): Promise<ISchedules> {
+    const film = await this.filmRepository.findOne({
+      where: { id: filmId },
+      relations: ['schedule'],
+    });
+
+    if (!film) {
+      throw new NotFoundException(`Фильм не найден: ${filmId}`);
+    }
+
+    return { total: film.schedule.length, items: film.schedule };
   }
 }
