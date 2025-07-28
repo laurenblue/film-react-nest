@@ -6,6 +6,9 @@ import { configProvider } from './app.config.provider';
 import { OrderController } from './order/order.controller';
 import { OrderService } from './order/order.service';
 import { FilmsModule } from './films/films.module';
+import { PostgresModule } from './typeorm/postgres.module';
+
+const isPostgres = process.env.DATABASE_DRIVER === 'postgres';
 
 @Module({
   imports: [
@@ -13,10 +16,11 @@ import { FilmsModule } from './films/films.module';
       isGlobal: true,
       cache: true,
     }),
-    FilmsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    FilmsModule,
+    ...(isPostgres ? [PostgresModule] : []),
   ],
   controllers: [OrderController],
   providers: [configProvider, OrderService],
