@@ -1,11 +1,10 @@
-import { JsonLogger } from '../json.logger';
+import { TskvLogger } from '../tskv.logger';
 
-describe('JsonLogger', () => {
+describe.only('TskvLogger', () => {
   let log;
-  let logger: JsonLogger;
+  const tskvLogger = new TskvLogger();
 
   beforeEach(() => {
-    logger = new JsonLogger();
     log = jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
@@ -14,10 +13,10 @@ describe('JsonLogger', () => {
   });
 
   it('should log correct format', () => {
-    logger.warn('hello', { a: 'b', c: 1 });
+    tskvLogger.warn('hello', { a: 'b', c: 1 });
     expect(log).toBeCalledTimes(1);
     expect(log).toBeCalledWith(
-      '{"level":"warn","message":"hello","optionalParams":[[{"a":"b","c":1}]]}',
+      'level=warn\tmessage=hello\toptional=[[{"a":"b","c":1}]]',
     );
   });
 });

@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrderController } from './order.controller';
+import { OrderService } from './order.service';
 import { fixtures } from './order.fixtures';
 import * as filmFixtures from '../films/films.fixtures';
 import { FilmsService } from '../films/films.service';
-import { OrderService } from './order.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Film } from 'src/typeorm/entities/film.entity';
 import { Schedule } from 'src/typeorm/entities/schedule.entity';
 
-describe('OrderController', () => {
-  let controller: OrderController;
+describe('OrderService', () => {
+  let service: OrderService;
 
   const film = filmFixtures.fixtures.film;
 
@@ -36,10 +35,9 @@ describe('OrderController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [OrderController],
       providers: [
-        FilmsService,
         OrderService,
+        FilmsService,
         {
           provide: getRepositoryToken(Film),
           useValue: filmRepoMock,
@@ -51,37 +49,30 @@ describe('OrderController', () => {
       ],
     }).compile();
 
-    controller = module.get<OrderController>(OrderController);
+    service = module.get<OrderService>(OrderService);
   });
 
-  it('should succeed if place is empty', async () => {
-    const res = await controller.create({
-      email: 'xxx',
-      phone: '+7',
-      tickets: [fixtures.postOrderTicket],
-      id: 'order-1',
-    });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
+  it('should create an order if seat is available', async () => {
+    const res = await service.createOrder(fixtures.postOrder);
     expect(res).toEqual({
       total: 1,
       items: [fixtures.postOrderTicket],
     });
   });
 
-  it('should fail if place is busy', async () => {
+  it('should throw if seat is already taken', async () => {
     scheduleRepoMock.findOne.mockResolvedValueOnce({
       ...film.schedule[0],
       film: { id: film.id },
       taken: [`${fixtures.postOrderTicket.row}:${fixtures.postOrderTicket.seat}`],
     });
 
-    const res = controller.create({
-      email: 'xxx',
-      phone: '+7',
-      tickets: [fixtures.postOrderTicket],
-      id: 'order-2',
-    });
-
-    await expect(res).rejects.toThrow('already taken');
+    await expect(service.createOrder(fixtures.postOrder)).rejects.toThrow(
+      'already taken',
+    );
   });
 });

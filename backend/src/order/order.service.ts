@@ -37,7 +37,7 @@ export class OrderService {
       }
 
       if (schedule.taken.includes(seatCode)) {
-        throw new BadRequestException(`Место уже занято: ${seatCode}`);
+        throw new BadRequestException(`already taken`);
       }
 
       if (!takenMap[schedule.id]) {
@@ -52,6 +52,9 @@ export class OrderService {
       await this.scheduleRepo.save(schedule);
     }
 
-    return { success: true };
+    return {
+      total: dto.tickets.length,
+      items: dto.tickets,
+    };
   }
 }
