@@ -1,5 +1,8 @@
 # FILM!
 
+# ССЫЛКА НА ПРИЛОЖЕНИЕ 
+http://filmsbooking.nomorepartiessbs.ru
+
 ## Установка
 
 ### MongoDB
