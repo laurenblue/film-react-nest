@@ -15,14 +15,17 @@ export class Film {
   @Column()
   director: string;
 
-  @Column()
-  rating: string;
+  @Column('double precision')
+  rating: number;
 
   @Column('text', { array: true })
   tags: string[];
 
   @Column()
   image: string;
+
+  @Column()
+  cover: string;
 
   @Column()
   about: string;
